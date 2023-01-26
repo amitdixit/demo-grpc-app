@@ -16,7 +16,7 @@ service UserService {
     };
   }
 
-  rpc GetNewUsers(google.protobuf.Empty) returns (ListReply){
+  rpc GetNewUsers(NewUserMessageRequest) returns (stream UserMessageRequest){
     option (google.api.http) ={
       get : "/newusers"
     };
@@ -61,6 +61,12 @@ service UserService {
 }
 */
 
+
+message UserMessageRequest{
+  int32 id = 1;
+  string userName=2;
+}
+
 message CreateUserMessageRequest{
   int32 id = 1;
   string userName=2;
@@ -71,7 +77,7 @@ message GetUserMessageRequest{
 }
 
 message UpdateUserMessageRequest{
-  int32 id=1; //id is bound from route parameter
+  int32 id=1; 
   string userName=2;
 }
 
@@ -86,4 +92,7 @@ message ListReply{
 message UserMessageReply{
   int32 id = 1;
   string userName=2;
+}
+
+message NewUserMessageRequest{
 }

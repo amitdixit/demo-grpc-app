@@ -1,11 +1,12 @@
 ﻿
+using Grpc.Core;
 using Grpc.Net.Client;
 
 using (var channel = GrpcChannel.ForAddress("https://localhost:7234"))
 {
     var client = new GrpcCrudServiceClient.UserService.UserServiceClient(channel);
 
-    Console.WriteLine($"Saving Users");
+    Console.WriteLine($"****** Saving Users ******");
     var reply = await client.CreateUserAsync(new GrpcCrudServiceClient.CreateUserMessageRequest
     {
         Id = 1,
@@ -25,7 +26,7 @@ using (var channel = GrpcChannel.ForAddress("https://localhost:7234"))
     });
 
 
-    Console.WriteLine($"Get All Users");
+    Console.WriteLine($"****** Get All Users ******");
 
     var users = await client.ListUsersAsync(new Google.Protobuf.WellKnownTypes.Empty());
 
@@ -34,13 +35,13 @@ using (var channel = GrpcChannel.ForAddress("https://localhost:7234"))
         Console.WriteLine($"Hello {user.UserName}");
     }
 
-    Console.WriteLine($"Get Single Users");
+    Console.WriteLine($"****** Get Single Users ******");
 
     var singleUser = await client.GetUserAsync(new GrpcCrudServiceClient.GetUserMessageRequest { Id = 1 });
 
     Console.WriteLine($"Hello {singleUser.UserName}");
 
-    Console.WriteLine($"Updating the User");
+    Console.WriteLine($"****** Updating the User ******");
 
     singleUser.UserName = "Updated Name";
 
@@ -50,7 +51,7 @@ using (var channel = GrpcChannel.ForAddress("https://localhost:7234"))
         UserName = singleUser.UserName,
     });
 
-    Console.WriteLine($"Users after update");
+    Console.WriteLine($"****** Users after update ******");
 
     users = await client.ListUsersAsync(new Google.Protobuf.WellKnownTypes.Empty());
 
@@ -59,22 +60,33 @@ using (var channel = GrpcChannel.ForAddress("https://localhost:7234"))
         Console.WriteLine($"Hello {user.UserName}");
     }
 
-    var deleteUser = await client.DeleteUserAsync(new GrpcCrudServiceClient.DeleteUserMessageRequest { Id = 1 });
 
 
-    Console.WriteLine($"Users after Delete");
+    Console.WriteLine($"****** Deleting the User ******");
+    await client.DeleteUserAsync(new GrpcCrudServiceClient.DeleteUserMessageRequest { Id = 1 });
+
+
+    Console.WriteLine($"****** Users after Delete ******");
 
     users = await client.ListUsersAsync(new Google.Protobuf.WellKnownTypes.Empty());
 
     foreach (var user in users.UserMessages)
     {
         Console.WriteLine($"Hello {user.UserName}");
+    }
+
+
+    Console.WriteLine($"****** Streaming Users *************");
+
+    using (var call = client.GetNewUsers(new GrpcCrudServiceClient.NewUserMessageRequest()))
+    {
+        while (await call.ResponseStream.MoveNext())
+        {
+            var currentUser = call.ResponseStream.Current;
+
+            Console.WriteLine($"Id = {currentUser.Id} Name ={currentUser.UserName}");
+        }
     }
 
 }
-//var client = new GrpcCrudServiceClient.UserService(channel);// UserApiService Greeter.GreeterClient(channel);
-//var reply = await client.SayHelloAsync(
-//                  new HelloRequest { Name = "GreeterClient" });
-//Console.WriteLine("Greeting: " + reply.Message);
-//Console.WriteLine("Press any key to exit...");
 Console.ReadKey();

@@ -80,4 +80,25 @@ public class UserApiService : UserService.UserServiceBase
 
         return Task.FromResult(new Empty());
     }
+
+    public override async Task GetNewUsers(NewUserMessageRequest request, IServerStreamWriter<UserMessageRequest> responseStream, ServerCallContext context)
+    {
+        var newUsers = new List<UserMessageRequest>()
+        {
+            new UserMessageRequest{Id = 1, UserName ="Tom"},
+            new UserMessageRequest{Id = 2, UserName ="Dick"},
+            new UserMessageRequest{Id = 3, UserName ="Harry"},
+            new UserMessageRequest{Id = 4, UserName ="Dexter"},
+            new UserMessageRequest{Id = 5, UserName ="Debra"},
+            new UserMessageRequest{Id = 6, UserName ="Angel"},
+            new UserMessageRequest{Id = 7, UserName ="Quinn"},
+            new UserMessageRequest{Id = 8, UserName ="Trinity"}
+        };
+
+        foreach (var user in newUsers)
+        {
+            await Task.Delay(2000);
+            await responseStream.WriteAsync(user);
+        }
+    }
 }
