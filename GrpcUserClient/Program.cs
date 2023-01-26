@@ -84,7 +84,7 @@ using (var channel = GrpcChannel.ForAddress("https://localhost:7234"))
         {
             var currentUser = call.ResponseStream.Current;
 
-            Console.WriteLine($"Id = {currentUser.Id} Name ={currentUser.UserName}");
+            Console.WriteLine($"Id = {currentUser.Id} Name = {currentUser.UserName}");
         }
     }
 

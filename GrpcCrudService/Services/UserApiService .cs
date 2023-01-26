@@ -97,6 +97,12 @@ public class UserApiService : UserService.UserServiceBase
 
         foreach (var user in newUsers)
         {
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                context.CancellationToken.ThrowIfCancellationRequested();
+                //break;
+            }
+
             await Task.Delay(2000);
             await responseStream.WriteAsync(user);
         }
