@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "GrpcCrudService";
+option csharp_namespace = "GrpcCrudServiceClient";
 
 package userapi;
 
@@ -13,12 +13,6 @@ service UserService {
   rpc ListUsers(google.protobuf.Empty) returns (ListReply){
     option (google.api.http) ={
       get : "/users"
-    };
-  }
-
-  rpc GetNewUsers(google.protobuf.Empty) returns (ListReply){
-    option (google.api.http) ={
-      get : "/newusers"
     };
   }
 
